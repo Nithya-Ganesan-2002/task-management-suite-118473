@@ -6,8 +6,31 @@ const boardController = require('../controllers/boards');
 const { requireAuth } = require('../middleware/auth');
 const fileController = require('../controllers/files');
 const fileUpload = require('../middleware/fileUpload');
+const statsController = require('../controllers/stats');
 
 const router = express.Router();
+
+/**
+ * @swagger
+ * tags:
+ *   - name: Stats
+ *     description: Productivity and dashboard statistics endpoints (require authentication)
+ */
+
+/**
+ * @swagger
+ * /stats/productivity:
+ *   get:
+ *     summary: Productivity statistics for authenticated user (dashboard)
+ *     tags: [Stats]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Productivity statistics object
+ */
+router.get('/stats/productivity', requireAuth, statsController.productivity.bind(statsController));
+
 
 // Health endpoint
 /**
