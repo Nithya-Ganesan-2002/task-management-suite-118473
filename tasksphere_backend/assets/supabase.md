@@ -1,4 +1,38 @@
-# Supabase Integration for TaskSphere Backend - Boards & Kanban
+# Supabase Integration for TaskSphere Backend and Frontend
+
+## Secure Supabase Configuration
+
+**Backend (`tasksphere_backend`):**
+- Requires a `.env` file (place in `tasksphere_backend/.env`).
+- Add the following keys (do NOT hardcode these in source code!):
+  ```
+  SUPABASE_URL=<your-supabase-url>
+  SUPABASE_KEY=<your-service-role-or-public-key>
+  ```
+- These are referenced in code by:
+  ```js
+  const SUPABASE_URL = process.env.SUPABASE_URL;
+  const SUPABASE_KEY = process.env.SUPABASE_KEY;
+  ```
+
+**Frontend (`tasksphere_frontend`):**
+- Requires a `.env` file (place in `tasksphere_frontend/.env`).
+- Add:
+  ```
+  VITE_SUPABASE_URL=<your-supabase-url>
+  VITE_SUPABASE_ANON_KEY=<your-anon-key>
+  ```
+- Referenced in code as:
+  ```ts
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  ```
+- Never expose service keys in frontend; use only anon keys for client-side code.
+
+**Do NOT commit these .env files with secrets to version control.**  
+Always use environment variables for configuration/secrets.
+
+---
 
 This backend expects the following Supabase tables and relationships (schema):
 
