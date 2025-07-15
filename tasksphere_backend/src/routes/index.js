@@ -2,6 +2,7 @@ const express = require('express');
 const healthController = require('../controllers/health');
 const authController = require('../controllers/auth');
 const taskController = require('../controllers/tasks');
+const boardController = require('../controllers/boards');
 const { requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
@@ -97,6 +98,57 @@ router.post('/auth/logout', authController.logout.bind(authController));
  *     scheme: bearer
  *     bearerFormat: JWT
  */
+
+/**
+ * @swagger
+ * tags:
+ *   - name: Boards
+ *     description: CRUD operations for boards (require authentication). Supports Kanban ordering and board-task management.
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Board:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *           example: 1
+ *         user_id:
+ *           type: string
+ *         title:
+ *           type: string
+ *         description:
+ *           type: string
+ *         order:
+ *           type: integer
+ *         created_at:
+ *           type: string
+ *           format: date-time
+ *         updated_at:
+ *           type: string
+ *           format: date-time
+ *     BoardWithTasks:
+ *       allOf:
+ *         - $ref: "#/components/schemas/Board"
+ *         - type: object
+ *           properties:
+ *             tasks:
+ *               type: array
+ *               items:
+ *                 $ref: "#/components/schemas/Task"
+ */
+
+// Board CRUD routes (require authentication)
+router.post('/boards', requireAuth, boardController.create.bind(boardController));
+router.get('/boards', requireAuth, boardController.list.bind(boardController));
+router.get('/boards/:id', requireAuth, boardController.get.bind(boardController));
+router.put('/boards/:id', requireAuth, boardController.update.bind(boardController));
+router.delete('/boards/:id', requireAuth, boardController.delete.bind(boardController));
+// Kanban: add/move task to board at given order
+router.post('/boards/:id/tasks', requireAuth, boardController.addOrMoveTask.bind(boardController));
 
 // Task CRUD routes (all require authentication)
 router.post('/tasks', requireAuth, taskController.create.bind(taskController));
