@@ -4,6 +4,8 @@ const authController = require('../controllers/auth');
 const taskController = require('../controllers/tasks');
 const boardController = require('../controllers/boards');
 const { requireAuth } = require('../middleware/auth');
+const fileController = require('../controllers/files');
+const fileUpload = require('../middleware/fileUpload');
 
 const router = express.Router();
 
@@ -149,6 +151,60 @@ router.put('/boards/:id', requireAuth, boardController.update.bind(boardControll
 router.delete('/boards/:id', requireAuth, boardController.delete.bind(boardController));
 // Kanban: add/move task to board at given order
 router.post('/boards/:id/tasks', requireAuth, boardController.addOrMoveTask.bind(boardController));
+
+/**
+ * @swagger
+ * /tasks/{taskId}/attachments:
+ *   post:
+ *     summary: Upload file and attach it to task
+ *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: taskId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Task ID to attach file to
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: File uploaded and linked to task successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 file_url:
+ *                   type: string
+ *                 storage_object:
+ *                   type: object
+ *       400:
+ *         description: No file uploaded or invalid input
+ *       401:
+ *         description: Authentication required
+ *       403:
+ *         description: Task not found, or not owned by user
+ *       500:
+ *         description: Storage or backend error
+ */
+// File upload endpoint for tasks
+router.post(
+  '/tasks/:taskId/attachments',
+  requireAuth,
+  fileUpload,
+  fileController.uploadTaskAttachment.bind(fileController)
+);
 
 // Task CRUD routes (all require authentication)
 router.post('/tasks', requireAuth, taskController.create.bind(taskController));
