@@ -77,6 +77,8 @@ class BoardController {
       if (error) {
         return res.status(500).json({ message: error.message || 'Failed to create board' });
       }
+      // Real-time event: Board created
+      emitUpdate({ type: 'board_created', payload: data });
       return res.status(201).json(data);
     } catch (err) {
       console.error('Create Board error:', err);
@@ -304,6 +306,8 @@ class BoardController {
       if (error) {
         return res.status(500).json({ message: error.message });
       }
+      // Real-time event: Board updated
+      emitUpdate({ type: 'board_updated', payload: data });
       return res.status(200).json(data);
     } catch (err) {
       console.error('Update Board error:', err);
@@ -374,6 +378,8 @@ class BoardController {
       if (error) {
         return res.status(500).json({ message: error.message });
       }
+      // Real-time event: Board deleted
+      emitUpdate({ type: 'board_deleted', payload: { id, user_id: user.id } });
       return res.status(204).send();
     } catch (err) {
       console.error('Delete Board error:', err);
@@ -463,6 +469,17 @@ class BoardController {
       if (btError) {
         return res.status(500).json({ message: btError.message || 'Failed to add/move task in board' });
       }
+      // Real-time event: Task moved/added in Kanban board
+      emitUpdate({
+        type: 'board_task_changed',
+        payload: {
+          board_id: id,
+          task_id,
+          new_order: order,
+          board_task: bt,
+          user_id: user.id,
+        },
+      });
       return res.status(200).json({ board_task: bt });
     } catch (err) {
       console.error('addOrMoveTask error:', err);

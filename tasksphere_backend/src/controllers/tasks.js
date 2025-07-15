@@ -1,6 +1,7 @@
 'use strict';
 
 const { supabase } = require('../supabase');
+const { emitUpdate } = require('../realtime');
 
 /**
  * TaskController handles CRUD operations for user tasks.
@@ -68,6 +69,8 @@ class TaskController {
       if (error) {
         return res.status(500).json({ message: error.message || 'Failed to create task' });
       }
+      // Real-time event: Task created
+      emitUpdate({ type: 'task_created', payload: data });
       return res.status(201).json(data);
     } catch (err) {
       console.error('Create Task error:', err);
@@ -112,6 +115,8 @@ class TaskController {
       if (error) {
         return res.status(500).json({ message: error.message || 'Failed to fetch tasks' });
       }
+      // Real-time event: Task updated
+      emitUpdate({ type: 'task_updated', payload: data });
       return res.status(200).json(data);
     } catch (err) {
       console.error('List Tasks error:', err);
@@ -333,6 +338,8 @@ class TaskController {
       if (error) {
         return res.status(500).json({ message: error.message });
       }
+      // Real-time event: Task deleted
+      emitUpdate({ type: 'task_deleted', payload: { id, user_id: user.id } });
       return res.status(204).send();
     } catch (err) {
       console.error('Delete Task error:', err);
