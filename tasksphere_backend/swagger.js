@@ -4,12 +4,22 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'My Express API',
+      title: 'TaskSphere Express API',
       version: '1.0.0',
-      description: 'A simple Express API documented with Swagger',
-    }
+      description: 'TaskSphere API documented with Swagger. Includes authentication endpoints using Supabase.',
+    },
+    tags: [
+      {
+        name: 'Health',
+        description: 'Health check endpoints'
+      },
+      {
+        name: 'Auth',
+        description: 'User authentication endpoints (signup, login, logout)'
+      }
+    ]
   },
-  apis: ['./src/routes/*.js'], // Path to the API docs
+  apis: ['./src/routes/*.js', './src/controllers/*.js'], // Path to the API docs
 };
 
 const swaggerSpec = swaggerJSDoc(options);
